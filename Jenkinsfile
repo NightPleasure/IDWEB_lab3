@@ -41,5 +41,35 @@ pipeline {
         }
       }
     }
+  }
+  post{
+    failure{
+      script{
+        ON_SUCCESS_SEND_EMAIL = "false"
+      }
+    }
+    success{
+      script{
+        ON_FAILURE_SEND_EMAIL = "false"
+      }
+    }
+    cleanup{
+      script{
+        if(ON_SUCCESS_SEND_EMAIL == "true"){
+          mail body: "Project name: ${env.JOB_NAME}<br>Build number: ${env.BUILD_NUMBER}<br>Build URL: ${env.BUILD_URL}", 
+          charset: 'UTF-8', 
+          mimeType: 'text/html', 
+          subject: "Jenkins - build was successful", 
+          to: "barbaian.victor@gmail.com";
+        }
+        else if(ON_FAILURE_SEND_EMAIL == "true"){
+          mail body: "Project name: ${env.JOB_NAME}<br>Build number: ${env.BUILD_NUMBER}<br>Build URL: ${env.BUILD_URL}",
+          charset: 'UTF-8', 
+          mimeType: 'text/html', 
+          subject: "Jenkins - build failed", 
+          to: "barbaian.victor@gmail.com";
+        }
+      }
+    }
   } 
 }
